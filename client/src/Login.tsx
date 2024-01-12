@@ -1,18 +1,28 @@
 import { io } from 'socket.io-client';
 import Button from './Buton';
-import { ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 import UserInput from './UserInput';
-import Chats from './Chats';
+import { GiCheckMark } from 'react-icons/gi';
+import { MdContentCopy } from 'react-icons/md';
 
-const socket = io('ws://localhost:5001');
+io('ws://localhost:5001');
 
-function Login({ formData, Loading, onInputChange, joinRoom, createRoom }) {
+function Login({
+  formData,
+  Loading,
+  onInputChange,
+  joinRoom,
+  createRoom,
+  generateUniqueId,
+  copyToClipboard,
+  copied,
+}) {
   const [tab, setTab] = useState('create');
   const { Username, Room, name } = formData;
   return (
     <section>
-      <div className="w-full h-screen py-8 flex items-center justify-center ">
-        <div className="w-[32vw] min-h-[40vh] flex flex-col bg-white rounded-lg py-2 ">
+      <div className="w-full h-screen py-8 flex items-center justify-center px-4 md:px-0 ">
+        <div className="w-full md:w-[32vw] min-h-[40vh] flex flex-col bg-white rounded-lg py-2 ">
           <div className="flex justify-evenly">
             <button
               onClick={() => setTab('create')}
@@ -46,22 +56,38 @@ function Login({ formData, Loading, onInputChange, joinRoom, createRoom }) {
                     inputChange={onInputChange}
                     className="rounded-lg w-full"
                   />
-                  <UserInput
+                  {/* <UserInput
                     label="Room Name"
                     placeholder="Room name"
                     value={name}
                     name="name"
                     inputChange={onInputChange}
                     className=" rounded-lg w-full"
-                  />
-                  <UserInput
-                    label="Room ID"
-                    placeholder="Room ID"
-                    value={Room}
-                    name="Room"
-                    inputChange={onInputChange}
-                    className=" rounded-lg w-full"
-                  />
+                  /> */}
+                  <div className="flex items-center gap-2 ">
+                    <Button
+                      handleClick={generateUniqueId}
+                      children="Create ID"
+                      className="!w-fit p-3 text-sm whitespace-nowrap"
+                    ></Button>
+                    <span className="relative  w-full">
+                      <UserInput
+                        label="Room ID"
+                        placeholder="Room ID"
+                        value={Room}
+                        name="Room"
+                        inputChange={onInputChange}
+                        className=" rounded-lg w-full"
+                        readonly={true}
+                      />
+                      <div
+                        onClick={copyToClipboard}
+                        className="absolute right-4 top-[40%]  cursor-pointer"
+                      >
+                        {copied ? <GiCheckMark /> : <MdContentCopy />}
+                      </div>
+                    </span>
+                  </div>
                 </div>
                 <div className="flex flex-col justify-between gap-4 items-center mb-4">
                   <img

@@ -4,7 +4,13 @@ import { SlOptionsVertical } from 'react-icons/sl';
 import Modal from './Modal';
 import DropDown from './dropDown';
 
-const Chats = ({ socket, formData, setNotifcation, notification }) => {
+const Chats = ({
+  socket,
+  formData,
+  setNotifcation,
+  notification,
+  leaveRoom,
+}: any) => {
   const [currentessage, setCurrentMessage] = useState('');
   const [messages, setMessageList] = useState([]);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
@@ -17,15 +23,18 @@ const Chats = ({ socket, formData, setNotifcation, notification }) => {
     setIsOptionOpen(false);
   };
 
-  const leaveRoom = () => {
+  const exitRoom = () => {
+    leaveRoom();
     handlecloseOption();
   };
+
   const openModal = () => {
     handlecloseOption();
   };
+
   const optionlist = {
     optionList: [
-      { title: 'Logout', callback: leaveRoom },
+      { title: 'Leave Room', callback: exitRoom },
       { title: 'Update profile', callback: openModal },
     ],
   };
@@ -67,22 +76,24 @@ const Chats = ({ socket, formData, setNotifcation, notification }) => {
     };
 
     const handleNotification = (data: any) => {
-      setNotifcation(data);
+      setNotifcation((prev: any) => [...prev, data]);
     };
 
     socket.on('receive_message', handleReceiveMessage);
     socket.on('join_room', handleNotification);
     socket.on('create_room', handleNotification);
+    socket.on('leave_room', handleNotification);
     return () => {
       socket.off('receive_message', handleReceiveMessage);
       socket.off('join_room', handleNotification);
       socket.off('create_room', handleNotification);
+      socket.off('leave_room', handleNotification);
     };
   }, []);
   return (
     <section>
-      <div className="w-full h-screen py-8 flex items-center justify-center ">
-        <div className="w-[40vw] h-[80vh] rounded-md border border-red-500">
+      <div className="w-full h-screen py-8 flex items-center justify-center px-4 md:px-0 ">
+        <div className="w-full md:w-[40vw] h-[80vh] rounded-md border border-red-500">
           <div className="h-[10vh] w-full bg-[#551FFF] flex items-center justify-between px-2">
             <div className=" flex items-center gap-2 ">
               <img
@@ -108,11 +119,15 @@ const Chats = ({ socket, formData, setNotifcation, notification }) => {
             </div>
           </div>
           <div className="flex-1 h-[60vh] overflow-scroll w-full flex flex-col p-5 scrollbar-hide">
-            {notification && (
-              <p className="text-xs text-center bg-yellow-100 rounded-full p-2">
-                {notification}
-              </p>
-            )}
+            {notification &&
+              notification.map((alert: string, idx: number) => (
+                <p
+                  className="text-xs text-center bg-yellow-100 rounded-full p-2 mb-2"
+                  key={idx}
+                >
+                  {alert}
+                </p>
+              ))}
             {messages.map((item, idx) => (
               <div
                 key={idx}

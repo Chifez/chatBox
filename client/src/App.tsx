@@ -18,6 +18,11 @@ function App() {
     Loading,
     setNotifcation,
     notification,
+    copied,
+    copyToClipboard,
+    generateUniqueId,
+    leaveRoom,
+    Name,
   } = useSocket(socket);
 
   return (
@@ -29,6 +34,9 @@ function App() {
           onInputChange={onInputChange}
           joinRoom={joinRoom}
           createRoom={createRoom}
+          copied={copied}
+          copyToClipboard={copyToClipboard}
+          generateUniqueId={generateUniqueId}
         />
       ) : (
         <Chats
@@ -36,6 +44,8 @@ function App() {
           formData={formData}
           setNotifcation={setNotifcation}
           notification={notification}
+          leaveRoom={leaveRoom}
+          Name={Name}
         />
       )}
     </div>

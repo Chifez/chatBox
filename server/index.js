@@ -18,13 +18,6 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log(`user connected ${socket.id}`);
 
-  socket.on('join_room', (data) => {
-    socket.join(data);
-    const message = `user with id ${socket.id} has joined room ${data}`;
-    console.log(message);
-    socket.to(data.room).emit('join_room', message);
-  });
-
   socket.on('create_room', (data) => {
     socket.join(data.Room);
     const message = `you have created ${data.name}`;
@@ -32,9 +25,23 @@ io.on('connection', (socket) => {
     socket.to(data.room).emit('create_room', message);
   });
 
+  socket.on('join_room', (data) => {
+    socket.join(data.room);
+    const message = `${data.user} has joined `;
+    console.log(message);
+    socket.to(data.room).emit('join_room', message);
+  });
+  socket.on('leave_room', (data) => {
+    socket.leave(data.room);
+    const message = `${data.user} has left `;
+    console.log(message);
+    socket.to(data.room).emit('join_room', message);
+  });
+
   socket.on('send_message', (data) => {
     socket.to(data.room).emit('receive_message', data);
   });
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });

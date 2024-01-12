@@ -53,17 +53,18 @@ const Chats = ({ socket, formData, leaveRoom }: any) => {
         date: getCurrentTime(),
       };
       await socket.emit('send_message', messageData);
-      setMessageList((prev) => [...prev, messageData]);
+      setMessageList((prev) => [...prev, { data: messageData }]);
       setCurrentMessage('');
     }
   };
 
   const handleReceiveMessage = (data: any) => {
-    setMessageList((prev) => [...prev, data]);
+    setMessageList((prev) => [...prev, { data: data }]);
   };
 
   const handleNotification = (data) => {
-    setNotifcation((prev) => [...prev, data]);
+    setMessageList((prev) => [...prev, { notify: data }]);
+    // setNotifcation((prev) => [...prev, data]);
   };
 
   const handleSetRoomName = ({ roomName }: any) => {
@@ -113,7 +114,7 @@ const Chats = ({ socket, formData, leaveRoom }: any) => {
             </div>
           </div>
           <div className="flex-1 h-[60vh] overflow-scroll w-full bg-slate-300 flex flex-col p-5 scrollbar-hide">
-            {notification &&
+            {/* {notification &&
               notification.map((alert: string, idx: number) => (
                 <p
                   className="text-xs text-center bg-yellow-100 rounded-full p-2 mb-2"
@@ -121,26 +122,40 @@ const Chats = ({ socket, formData, leaveRoom }: any) => {
                 >
                   {alert}
                 </p>
-              ))}
+              ))} */}
             {messages.map((item, idx) => (
-              <div
-                key={idx}
-                className={`h-auto max-w-2xl py-3 my-1 ${
-                  item.id === socket.id
-                    ? 'mr-auto  bg-[#D9D9D9] rounded-t-xl rounded-br-xl pr-5 pl-2'
-                    : 'ml-auto bg-[#E0F2FD] rounded-t-xl rounded-bl-xl pl-5 pr-2'
-                }`}
-              >
-                <p
-                  className={` font-semibold ${
-                    item.id === socket.id ? 'text-[#8b6060]' : 'text-[#405f72]'
-                  }`}
-                >
-                  {item.id === socket.id ? 'You' : item?.author}
-                </p>
-                <p>{item?.message}</p>
-                <p className="text-[10px]">{item?.date}</p>
-              </div>
+              <>
+                {item.notify && (
+                  <p
+                    className="text-xs text-center bg-yellow-100 rounded-full p-1 my-1"
+                    key={idx}
+                  >
+                    {item.notify}
+                  </p>
+                )}
+                {item.data && (
+                  <div
+                    key={idx}
+                    className={`h-auto max-w-2xl py-3 my-1 ${
+                      item.data.id === socket.id
+                        ? 'mr-auto  bg-[#D9D9D9] rounded-t-xl rounded-br-xl pr-5 pl-2'
+                        : 'ml-auto bg-[#E0F2FD] rounded-t-xl rounded-bl-xl pl-5 pr-2'
+                    }`}
+                  >
+                    <p
+                      className={` font-semibold ${
+                        item.data.id === socket.id
+                          ? 'text-[#8b6060]'
+                          : 'text-[#405f72]'
+                      }`}
+                    >
+                      {item.data.id === socket.id ? 'You' : item.data?.author}
+                    </p>
+                    <p>{item.data?.message}</p>
+                    <p className="text-[10px]">{item.data?.date}</p>
+                  </div>
+                )}
+              </>
             ))}
           </div>
           <div className="h-[10vh] bg-[#551FFF] flex items-center gap-2 px-2 py-2">

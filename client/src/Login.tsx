@@ -5,7 +5,7 @@ import UserInput from './UserInput';
 import { GiCheckMark } from 'react-icons/gi';
 import { MdContentCopy } from 'react-icons/md';
 
-io('ws://localhost:5001');
+// io('ws://localhost:5001');
 
 function Login({
   formData,
@@ -16,8 +16,10 @@ function Login({
   generateUniqueId,
   copyToClipboard,
   copied,
-}) {
+  error,
+}: any) {
   const [tab, setTab] = useState('create');
+
   const { Username, Room, name } = formData;
   return (
     <section>
@@ -56,15 +58,15 @@ function Login({
                     inputChange={onInputChange}
                     className="rounded-lg w-full"
                   />
-                  {/* <UserInput
+                  <UserInput
                     label="Room Name"
                     placeholder="Room name"
                     value={name}
                     name="name"
                     inputChange={onInputChange}
                     className=" rounded-lg w-full"
-                  /> */}
-                  <div className="flex items-center gap-2 ">
+                  />
+                  <div className="relative flex items-center gap-2 mb-4">
                     <Button
                       handleClick={generateUniqueId}
                       children="Create ID"
@@ -82,14 +84,18 @@ function Login({
                       />
                       <div
                         onClick={copyToClipboard}
-                        className="absolute right-4 top-[40%]  cursor-pointer"
+                        className="absolute  right-4 top-[40%]  cursor-pointer"
                       >
                         {copied ? <GiCheckMark /> : <MdContentCopy />}
                       </div>
                     </span>
+                    <p className="text-slate-500 absolute -bottom-6 right-0">
+                      share this ID with your friends
+                    </p>
                   </div>
+                  <p className="text-sm text-red-300 text-left">{error}</p>
                 </div>
-                <div className="flex flex-col justify-between gap-4 items-center mb-4">
+                {/* <div className="flex flex-col justify-between gap-4 items-center mb-4">
                   <img
                     src=""
                     alt=""
@@ -99,10 +105,11 @@ function Login({
                     <input type="file" className="absolute opacity-0" />
                     <Button className=" !text-sm p-3">Upload avatar</Button>
                   </span>
-                </div>
+                </div> */}
                 <Button
                   className=" !text-sm p-3"
                   handleClick={createRoom}
+                  //   handleClick={joinRoom}
                   isLoading={Loading}
                 >
                   Create Room
@@ -132,6 +139,7 @@ function Login({
                     inputChange={onInputChange}
                     className=" rounded-lg w-full"
                   />
+                  <p className="text-sm text-red-300 text-left">{error}</p>
                 </div>
                 <Button
                   className=" !text-sm p-3"

@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Button from './Buton';
 import { SlOptionsVertical } from 'react-icons/sl';
 import Modal from './Modal';
 import DropDown from './dropDown';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 const Chats = ({
   socket,
@@ -12,8 +13,13 @@ const Chats = ({
   leaveRoom,
 }: any) => {
   const [currentessage, setCurrentMessage] = useState('');
-  const [messages, setMessageList] = useState([]);
+  const [messages, setMessageList] = useState([
+    { id: '', author: '', message: '', date: '' },
+  ]);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
+  const [chatRoomName, setchatRoomName] = useState(formData.name);
+
+  const { Username, name, avatar, Room } = formData;
 
   const handleOpenOption = () => {
     setIsOptionOpen(!isOptionOpen);
@@ -38,8 +44,6 @@ const Chats = ({
       { title: 'Update profile', callback: openModal },
     ],
   };
-
-  const { Username, name, avatar, Room } = formData;
 
   const getCurrentTime = () => {
     const options: Intl.DateTimeFormatOptions = {
@@ -70,38 +74,45 @@ const Chats = ({
     }
   };
 
+  const handleReceiveMessage = (data: any) => {
+    setMessageList((prev) => [...prev, data]);
+    console.log('new message', messages);
+  };
+
+  const handleNotification = (data: any) => {
+    setNotifcation((prev: any) => [...prev, data]);
+  };
+
+  const setRoomName = ({ roomName }: any) => {
+    setchatRoomName(roomName);
+  };
   useEffect(() => {
-    const handleReceiveMessage = (data: any) => {
-      setMessageList((prev) => [...prev, data]);
-    };
-
-    const handleNotification = (data: any) => {
-      setNotifcation((prev: any) => [...prev, data]);
-    };
-
     socket.on('receive_message', handleReceiveMessage);
-    socket.on('join_room', handleNotification);
     socket.on('create_room', handleNotification);
+    socket.on('join_room', handleNotification);
     socket.on('leave_room', handleNotification);
+    socket.on('roomDetails', setRoomName);
     return () => {
       socket.off('receive_message', handleReceiveMessage);
-      socket.off('join_room', handleNotification);
       socket.off('create_room', handleNotification);
+      socket.off('join_room', handleNotification);
       socket.off('leave_room', handleNotification);
+      socket.off('roomDetails', setRoomName);
     };
   }, []);
+
   return (
     <section>
       <div className="w-full h-screen py-8 flex items-center justify-center px-4 md:px-0 ">
         <div className="w-full md:w-[40vw] h-[80vh] rounded-md border border-red-500">
           <div className="h-[10vh] w-full bg-[#551FFF] flex items-center justify-between px-2">
-            <div className=" flex items-center gap-2 ">
-              <img
+            <div className=" flex items-center gap-2">
+              {/* <img
                 src=""
                 alt=""
                 className="w-8 h-8 border border-red-500 rounded-full"
-              />
-              <p className="text-white font-semibold">{Username}</p>
+              /> */}
+              <p className="text-white font-semibold">{chatRoomName}</p>
             </div>
             <div className="relative">
               <SlOptionsVertical
@@ -118,7 +129,7 @@ const Chats = ({
               </Modal>
             </div>
           </div>
-          <div className="flex-1 h-[60vh] overflow-scroll w-full flex flex-col p-5 scrollbar-hide">
+          <div className="border border-green-500 flex-1 h-[60vh] overflow-scroll w-full flex flex-col p-5 scrollbar-hide">
             {notification &&
               notification.map((alert: string, idx: number) => (
                 <p
@@ -155,6 +166,9 @@ const Chats = ({
               value={currentessage}
               className="w-full bg-transparent p-3 border border-[#551FFF] rounded-md"
               onChange={handleMessageChange}
+              onKeyDown={(event) => {
+                event.key === 'Enter' && sendMessage();
+              }}
             />
             <Button
               className="!text-sm py-3 px-4 w-fit flex-1"

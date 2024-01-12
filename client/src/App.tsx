@@ -1,7 +1,4 @@
 import { io } from 'socket.io-client';
-import Button from './Buton';
-import { ChangeEvent, useState } from 'react';
-import UserInput from './UserInput';
 import Chats from './Chats';
 import Login from './Login';
 import useSocket from './useSocket';
@@ -22,7 +19,7 @@ function App() {
     copyToClipboard,
     generateUniqueId,
     leaveRoom,
-    Name,
+    error,
   } = useSocket(socket);
 
   return (
@@ -37,6 +34,7 @@ function App() {
           copied={copied}
           copyToClipboard={copyToClipboard}
           generateUniqueId={generateUniqueId}
+          error={error}
         />
       ) : (
         <Chats
@@ -45,7 +43,6 @@ function App() {
           setNotifcation={setNotifcation}
           notification={notification}
           leaveRoom={leaveRoom}
-          Name={Name}
         />
       )}
     </div>

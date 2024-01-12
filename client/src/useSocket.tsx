@@ -1,7 +1,9 @@
+import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { ChangeEvent, useState } from 'react';
+import { Socket } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 
-const useSocket = (socket) => {
+const useSocket = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) => {
   const [formData, setFormData] = useState({
     Username: '',
     name: '',
@@ -13,6 +15,7 @@ const useSocket = (socket) => {
   const [notification, setNotifcation] = useState([]);
   const [uniqueId, setUniqueId] = useState('');
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
 
   const { Username, Room, name } = formData;
 
@@ -26,6 +29,7 @@ const useSocket = (socket) => {
   };
 
   const copyToClipboard = () => {
+    if (!uniqueId) return;
     navigator.clipboard.writeText(uniqueId);
     setCopied(true);
   };
@@ -40,22 +44,43 @@ const useSocket = (socket) => {
 
   const joinRoom = async () => {
     setLoading(true);
-    if (Username !== '' && Room !== '') {
-      const data = {
-        user: Username,
-        room: Room,
-      };
-      await socket.emit('join_room', data);
+    if (!Username || !Room) {
+      setError('Incomplete details');
+      setTimeout(() => {
+        setError('');
+      }, 1500);
+      setLoading(false);
+      return;
     }
+    const data = {
+      user: Username,
+      room: Room,
+    };
+    await socket.emit('join_room', data);
+    socket.emit('get_room_details', { roomId: Room });
     setJoined(true);
     setLoading(false);
   };
 
   const createRoom = async () => {
     setLoading(true);
-    if (Username !== '' && Room !== '' && name !== '') {
-      await socket.emit('create_room', formData);
+    if (!Username || !Room || !name) {
+      setError('Incomplete details');
+      setTimeout(() => {
+        setError('');
+      }, 1500);
+      setLoading(false);
+      return;
     }
+    const data = {
+      user: Username,
+      room: Room,
+      name: name,
+    };
+    await socket.emit('create_room', data);
+    socket.emit('get_room_details', { roomId: Room });
+
+    setCopied(false);
     setJoined(true);
     setLoading(false);
   };
@@ -66,6 +91,12 @@ const useSocket = (socket) => {
       room: Room,
     };
     await socket.emit('leave_room', data);
+    // setFormData({
+    //   ...formData,
+    //   Username: '',
+    //   name: '',
+    //   Room: '',
+    // });
     setJoined(false);
   };
 
@@ -85,6 +116,7 @@ const useSocket = (socket) => {
     generateUniqueId,
     copyToClipboard,
     copied,
+    error,
   };
 };
 

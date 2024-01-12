@@ -1,11 +1,8 @@
-import { io } from 'socket.io-client';
 import Button from './Buton';
 import { useState } from 'react';
 import UserInput from './UserInput';
 import { GiCheckMark } from 'react-icons/gi';
 import { MdContentCopy } from 'react-icons/md';
-
-// io('ws://localhost:5001');
 
 function Login({
   formData,
@@ -109,7 +106,6 @@ function Login({
                 <Button
                   className=" !text-sm p-3"
                   handleClick={createRoom}
-                  //   handleClick={joinRoom}
                   isLoading={Loading}
                 >
                   Create Room

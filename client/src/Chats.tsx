@@ -1,47 +1,31 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Button from './Buton';
 import { SlOptionsVertical } from 'react-icons/sl';
 import Modal from './Modal';
 import DropDown from './dropDown';
-import ScrollToBottom from 'react-scroll-to-bottom';
 
-const Chats = ({
-  socket,
-  formData,
-  setNotifcation,
-  notification,
-  leaveRoom,
-}: any) => {
+const Chats = ({ socket, formData, leaveRoom }: any) => {
   const [currentessage, setCurrentMessage] = useState('');
-  const [messages, setMessageList] = useState([
-    { id: '', author: '', message: '', date: '' },
-  ]);
+  const [notification, setNotifcation] = useState([]);
+  const [messages, setMessageList] = useState([]);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
   const [chatRoomName, setchatRoomName] = useState(formData.name);
 
   const { Username, name, avatar, Room } = formData;
 
-  const handleOpenOption = () => {
-    setIsOptionOpen(!isOptionOpen);
-  };
-
-  const handlecloseOption = () => {
+  const handleExitRoom = () => {
+    leaveRoom();
     setIsOptionOpen(false);
   };
 
-  const exitRoom = () => {
-    leaveRoom();
-    handlecloseOption();
-  };
-
-  const openModal = () => {
-    handlecloseOption();
+  const handleOpenProfileModal = () => {
+    setIsOptionOpen(false);
   };
 
   const optionlist = {
     optionList: [
-      { title: 'Leave Room', callback: exitRoom },
-      { title: 'Update profile', callback: openModal },
+      { title: 'Leave Room', callback: handleExitRoom },
+      { title: 'Update profile', callback: handleOpenProfileModal },
     ],
   };
 
@@ -76,14 +60,13 @@ const Chats = ({
 
   const handleReceiveMessage = (data: any) => {
     setMessageList((prev) => [...prev, data]);
-    console.log('new message', messages);
   };
 
-  const handleNotification = (data: any) => {
-    setNotifcation((prev: any) => [...prev, data]);
+  const handleNotification = (data) => {
+    setNotifcation((prev) => [...prev, data]);
   };
 
-  const setRoomName = ({ roomName }: any) => {
+  const handleSetRoomName = ({ roomName }: any) => {
     setchatRoomName(roomName);
   };
   useEffect(() => {
@@ -91,20 +74,20 @@ const Chats = ({
     socket.on('create_room', handleNotification);
     socket.on('join_room', handleNotification);
     socket.on('leave_room', handleNotification);
-    socket.on('roomDetails', setRoomName);
+    socket.on('roomDetails', handleSetRoomName);
     return () => {
       socket.off('receive_message', handleReceiveMessage);
       socket.off('create_room', handleNotification);
       socket.off('join_room', handleNotification);
       socket.off('leave_room', handleNotification);
-      socket.off('roomDetails', setRoomName);
+      socket.off('roomDetails', handleSetRoomName);
     };
   }, []);
 
   return (
     <section>
       <div className="w-full h-screen py-8 flex items-center justify-center px-4 md:px-0 ">
-        <div className="w-full md:w-[40vw] h-[80vh] rounded-md border border-red-500">
+        <div className="w-full md:w-[40vw] h-[80vh] rounded-lg overflow-hidden ">
           <div className="h-[10vh] w-full bg-[#551FFF] flex items-center justify-between px-2">
             <div className=" flex items-center gap-2">
               {/* <img
@@ -116,20 +99,20 @@ const Chats = ({
             </div>
             <div className="relative">
               <SlOptionsVertical
-                onClick={handleOpenOption}
+                onClick={() => setIsOptionOpen(!isOptionOpen)}
                 className="cursor-pointer text-white"
               />
               <Modal
                 isDropDown={true}
                 openModal={isOptionOpen}
-                onClose={handlecloseOption}
+                onClose={() => setIsOptionOpen(false)}
                 extrastyle="absolute right-1 rounded-md z-50"
               >
                 <DropDown list={optionlist} />
               </Modal>
             </div>
           </div>
-          <div className="border border-green-500 flex-1 h-[60vh] overflow-scroll w-full flex flex-col p-5 scrollbar-hide">
+          <div className="flex-1 h-[60vh] overflow-scroll w-full bg-slate-300 flex flex-col p-5 scrollbar-hide">
             {notification &&
               notification.map((alert: string, idx: number) => (
                 <p
@@ -160,18 +143,18 @@ const Chats = ({
               </div>
             ))}
           </div>
-          <div className="h-[10vh] flex items-center gap-4 px-2">
+          <div className="h-[10vh] bg-[#551FFF] flex items-center gap-2 px-2 py-2">
             <input
               type="text"
               value={currentessage}
-              className="w-full bg-transparent p-3 border border-[#551FFF] rounded-md"
+              className="w-full h-full bg-white p-3 border border-[#551FFF] rounded-lg outline-none"
               onChange={handleMessageChange}
               onKeyDown={(event) => {
                 event.key === 'Enter' && sendMessage();
               }}
             />
             <Button
-              className="!text-sm py-3 px-4 w-fit flex-1"
+              className="!text-sm py-3 px-4 w-fit h-full flex-1 text-center flex items-center justify-center border"
               handleClick={sendMessage}
             >
               send

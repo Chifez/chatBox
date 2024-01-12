@@ -13,8 +13,6 @@ function App() {
     joinRoom,
     createRoom,
     Loading,
-    setNotifcation,
-    notification,
     copied,
     copyToClipboard,
     generateUniqueId,
@@ -37,13 +35,7 @@ function App() {
           error={error}
         />
       ) : (
-        <Chats
-          socket={socket}
-          formData={formData}
-          setNotifcation={setNotifcation}
-          notification={notification}
-          leaveRoom={leaveRoom}
-        />
+        <Chats socket={socket} formData={formData} leaveRoom={leaveRoom} />
       )}
     </div>
   );

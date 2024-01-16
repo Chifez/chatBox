@@ -1,17 +1,24 @@
 import { useEffect, useState } from 'react';
 import Button from './Buton';
 import { SlOptionsVertical } from 'react-icons/sl';
+import { BiCheckDouble } from 'react-icons/bi';
 import Modal from './Modal';
 import DropDown from './dropDown';
+import { IoMdAttach } from 'react-icons/io';
+import Image from './Image';
+import ChatCard from './ChatCard';
 
-const Chats = ({ socket, formData, leaveRoom }: any) => {
-  const [currentessage, setCurrentMessage] = useState('');
-  const [notification, setNotifcation] = useState([]);
+const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
+  const [currentMessage, setCurrentMessage] = useState('');
   const [messages, setMessageList] = useState([]);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
   const [chatRoomName, setchatRoomName] = useState(formData.name);
+  const [file, setFile] = useState();
+  const [typing, setIsTyping] = useState('');
 
   const { Username, name, avatar, Room } = formData;
+
+  let isTypingTimeout;
 
   const handleExitRoom = () => {
     leaveRoom();
@@ -19,6 +26,7 @@ const Chats = ({ socket, formData, leaveRoom }: any) => {
   };
 
   const handleOpenProfileModal = () => {
+    updateUserName();
     setIsOptionOpen(false);
   };
 
@@ -27,6 +35,17 @@ const Chats = ({ socket, formData, leaveRoom }: any) => {
       { title: 'Leave Room', callback: handleExitRoom },
       { title: 'Update profile', callback: handleOpenProfileModal },
     ],
+  };
+
+  const debounce = (func, delay) => {
+    let timeoutId;
+
+    return (...args) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
   };
 
   const getCurrentTime = () => {
@@ -43,44 +62,77 @@ const Chats = ({ socket, formData, leaveRoom }: any) => {
     setCurrentMessage(e.target.value);
   };
 
+  const sendTypingNotification = (isTyping: boolean) => {
+    const typingData = {
+      id: socket.id,
+      author: Username,
+      room: Room,
+      isTyping,
+    };
+
+    socket.emit('typing', typingData);
+  };
+
+  const handleTypingChange = debounce(() => {
+    sendTypingNotification(true);
+  }, 500);
+
   const sendMessage = async () => {
-    if (currentessage !== '') {
+    if (currentMessage !== '' || file !== '') {
+      sendTypingNotification(false);
+      setIsTyping('');
       const messageData = {
         id: socket.id,
         room: Room,
         author: Username,
-        message: currentessage,
+        message: currentMessage,
+        image: file,
         date: getCurrentTime(),
       };
+
       await socket.emit('send_message', messageData);
       setMessageList((prev) => [...prev, { data: messageData }]);
       setCurrentMessage('');
+      setFile('');
+    }
+    console.log(file);
+  };
+
+  const selectFile = (e: any) => {
+    if (e.target.files.length > 0) {
+      setFile(e.target.files[0]);
     }
   };
 
-  const handleReceiveMessage = (data: any) => {
-    setMessageList((prev) => [...prev, { data: data }]);
-  };
-
-  const handleNotification = (data) => {
-    setMessageList((prev) => [...prev, { notify: data }]);
-    // setNotifcation((prev) => [...prev, data]);
+  const handleMessage = (data: any) => {
+    if (data.type === 'alert') {
+      setMessageList((prev) => [...prev, { notify: data.value }]);
+    } else {
+      setMessageList((prev) => [...prev, { data: data.value }]);
+    }
   };
 
   const handleSetRoomName = ({ roomName }: any) => {
     setchatRoomName(roomName);
   };
+
+  const handleTypingNotification = (data) => {
+    console.log('someone is typing');
+    setIsTyping(`${data.author} is typing...`);
+    setTimeout(() => {
+      setIsTyping('');
+    }, 2000);
+  };
+
   useEffect(() => {
-    socket.on('receive_message', handleReceiveMessage);
-    socket.on('create_room', handleNotification);
-    socket.on('join_room', handleNotification);
-    socket.on('leave_room', handleNotification);
+    socket.on('receive_message', handleMessage);
+    socket.on('notification', handleMessage);
+    socket.on('typing', handleTypingNotification);
     socket.on('roomDetails', handleSetRoomName);
     return () => {
-      socket.off('receive_message', handleReceiveMessage);
-      socket.off('create_room', handleNotification);
-      socket.off('join_room', handleNotification);
-      socket.off('leave_room', handleNotification);
+      socket.off('receive_message', handleMessage);
+      socket.off('notification', handleMessage);
+      socket.on('typing', handleTypingNotification);
       socket.off('roomDetails', handleSetRoomName);
     };
   }, []);
@@ -114,56 +166,31 @@ const Chats = ({ socket, formData, leaveRoom }: any) => {
             </div>
           </div>
           <div className="flex-1 h-[60vh] overflow-scroll w-full bg-slate-300 flex flex-col p-5 scrollbar-hide">
-            {/* {notification &&
-              notification.map((alert: string, idx: number) => (
-                <p
-                  className="text-xs text-center bg-yellow-100 rounded-full p-2 mb-2"
-                  key={idx}
-                >
-                  {alert}
-                </p>
-              ))} */}
             {messages.map((item, idx) => (
-              <>
-                {item.notify && (
-                  <p
-                    className="text-xs text-center bg-yellow-100 rounded-full p-1 my-1"
-                    key={idx}
-                  >
-                    {item.notify}
-                  </p>
-                )}
-                {item.data && (
-                  <div
-                    key={idx}
-                    className={`h-auto max-w-2xl py-3 my-1 ${
-                      item.data.id === socket.id
-                        ? 'mr-auto  bg-[#D9D9D9] rounded-t-xl rounded-br-xl pr-5 pl-2'
-                        : 'ml-auto bg-[#E0F2FD] rounded-t-xl rounded-bl-xl pl-5 pr-2'
-                    }`}
-                  >
-                    <p
-                      className={` font-semibold ${
-                        item.data.id === socket.id
-                          ? 'text-[#8b6060]'
-                          : 'text-[#405f72]'
-                      }`}
-                    >
-                      {item.data.id === socket.id ? 'You' : item.data?.author}
-                    </p>
-                    <p>{item.data?.message}</p>
-                    <p className="text-[10px]">{item.data?.date}</p>
-                  </div>
-                )}
-              </>
+              <ChatCard item={item} socket={socket} key={idx} />
             ))}
           </div>
-          <div className="h-[10vh] bg-[#551FFF] flex items-center gap-2 px-2 py-2">
+
+          <div className="relative h-[10vh] bg-[#551FFF] flex items-center gap-2 px-2 py-2">
+            {typing !== '' && (
+              <p className="absolute left-2 -top-6 italic text-sm">{typing}</p>
+            )}
+            <div className="absolute left-1 px-1 ">
+              <input
+                onChange={selectFile}
+                type="file"
+                className="absolute w-full opacity-0"
+              />
+              <IoMdAttach className="w-7 h-7 " />
+            </div>
             <input
               type="text"
-              value={currentessage}
-              className="w-full h-full bg-white p-3 border border-[#551FFF] rounded-lg outline-none"
-              onChange={handleMessageChange}
+              value={currentMessage}
+              className="w-full h-full bg-white pl-8 p-3 border border-[#551FFF] rounded-lg outline-none"
+              onChange={(e) => {
+                handleMessageChange(e);
+                handleTypingChange();
+              }}
               onKeyDown={(event) => {
                 event.key === 'Enter' && sendMessage();
               }}

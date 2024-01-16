@@ -41,7 +41,16 @@ const useSocket = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) => {
         .value,
     }));
   };
-
+  // this fix this later bug
+  const updateUserName = async () => {
+    const oldName = formData.Username;
+    const newUpdate = setFormData({
+      ...formData,
+      Username: 'newName',
+    });
+    console.log(newUpdate);
+    // await socket.emit('updateName', {oldName, newUpdate});
+  };
   const joinRoom = async () => {
     setLoading(true);
     if (!Username || !Room) {
@@ -91,12 +100,12 @@ const useSocket = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) => {
       room: Room,
     };
     await socket.emit('leave_room', data);
-    // setFormData({
-    //   ...formData,
-    //   Username: '',
-    //   name: '',
-    //   Room: '',
-    // });
+    setFormData({
+      ...formData,
+      Username: '',
+      name: '',
+      Room: '',
+    });
     setJoined(false);
   };
 
@@ -117,6 +126,7 @@ const useSocket = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) => {
     copyToClipboard,
     copied,
     error,
+    updateUserName,
   };
 };
 

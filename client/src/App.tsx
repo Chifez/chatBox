@@ -18,6 +18,7 @@ function App() {
     generateUniqueId,
     leaveRoom,
     error,
+    updateUserName,
   } = useSocket(socket);
 
   return (
@@ -35,7 +36,12 @@ function App() {
           error={error}
         />
       ) : (
-        <Chats socket={socket} formData={formData} leaveRoom={leaveRoom} />
+        <Chats
+          socket={socket}
+          formData={formData}
+          leaveRoom={leaveRoom}
+          updateUserName={updateUserName}
+        />
       )}
     </div>
   );

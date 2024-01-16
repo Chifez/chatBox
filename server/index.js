@@ -63,7 +63,7 @@ const express = require('express');
 const cors = require('cors');
 const { Server } = require('socket.io');
 const http = require('http');
-
+const fs = require('fs');
 const app = express();
 
 app.use(cors());
@@ -85,7 +85,9 @@ io.on('connection', (socket) => {
     socket.join(data.room);
     const message = `${data.user} has joined `;
     console.log(message);
-    socket.to(data.room).emit('join_room', message);
+    socket
+      .to(data.room)
+      .emit('notification', { type: 'alert', value: message });
 
     // Emit roomDetails event in response to get_room_details request
     if (rooms[data.room]) {
@@ -97,7 +99,9 @@ io.on('connection', (socket) => {
     socket.join(data.room);
     const message = `you have created ${data.name}`;
     console.log(message);
-    socket.to(data.room).emit('create_room', message);
+    socket
+      .to(data.room)
+      .emit('notification', { type: 'alert', value: message });
 
     // Store room details
     rooms[data.room] = { roomName: data.name };
@@ -106,18 +110,31 @@ io.on('connection', (socket) => {
     io.emit('roomCreated', { roomId: data.room, roomName: data.name });
   });
 
+  socket.on('typing', (data) => {
+    console.log(data);
+    socket.to(data.room).emit('typing', data);
+  });
+
   socket.on('send_message', (data) => {
     console.log(data);
-    socket.to(data.room).emit('receive_message', data);
+    socket.to(data.room).emit('receive_message', { type: 'text', value: data });
   });
 
   socket.on('leave_room', (data) => {
     socket.leave(data.room);
     const message = `${data.user} has left `;
     console.log(message);
-    socket.to(data.room).emit('join_room', message);
+    socket
+      .to(data.room)
+      .emit('notification', { type: 'alert', value: message });
   });
 
+  socket.on('updateName', (data) => {
+    const message = `${data.oldName} has updated their username to ${data.newUpdate.Username}`;
+    socket
+      .to(data.Room)
+      .emit('notification', { type: 'alert', value: message });
+  });
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });

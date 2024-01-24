@@ -91,7 +91,10 @@ io.on('connection', (socket) => {
 
     // Emit roomDetails event in response to get_room_details request
     if (rooms[data.room]) {
-      socket.emit('roomDetails', { roomName: rooms[data.room].roomName });
+      socket.emit('roomDetails', {
+        roomName: rooms[data.room].roomName,
+        roomImage: rooms[data.room].roomImage,
+      });
     }
   });
 
@@ -104,10 +107,14 @@ io.on('connection', (socket) => {
       .emit('notification', { type: 'alert', value: message });
 
     // Store room details
-    rooms[data.room] = { roomName: data.name };
+    rooms[data.room] = { roomName: data.name, roomImage: data.avatar };
 
     // Emit an event to notify all clients about the new room
-    io.emit('roomCreated', { roomId: data.room, roomName: data.name });
+    io.emit('roomCreated', {
+      roomId: data.room,
+      roomName: data.name,
+      roomImage: data.avatar,
+    });
   });
 
   socket.on('typing', (data) => {
@@ -143,7 +150,10 @@ io.on('connection', (socket) => {
   socket.on('get_room_details', (data) => {
     const { roomId } = data;
     if (rooms[roomId]) {
-      socket.emit('roomDetails', { roomName: rooms[roomId].roomName });
+      socket.emit('roomDetails', {
+        roomName: rooms[roomId].roomName,
+        roomImage: rooms[roomId].roomImage,
+      });
     }
   });
 });

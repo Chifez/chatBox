@@ -10,6 +10,7 @@ function App() {
     formData,
     joined,
     onInputChange,
+    selectFile,
     joinRoom,
     createRoom,
     Loading,
@@ -28,6 +29,7 @@ function App() {
           formData={formData}
           Loading={Loading}
           onInputChange={onInputChange}
+          onSelectFile={selectFile}
           joinRoom={joinRoom}
           createRoom={createRoom}
           copied={copied}

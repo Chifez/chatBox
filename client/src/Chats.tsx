@@ -1,25 +1,30 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import Button from './Buton';
 import { SlOptionsVertical } from 'react-icons/sl';
-import { BiCheckDouble } from 'react-icons/bi';
 import Modal from './Modal';
 import DropDown from './dropDown';
 import { IoMdAttach } from 'react-icons/io';
-import Image from './Image';
 import ChatCard from './ChatCard';
 
 const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
   const [currentMessage, setCurrentMessage] = useState('');
-  const [messages, setMessageList] = useState([]);
+  const [messages, setMessageList] = useState<any[]>([]);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
-  const [chatRoomName, setchatRoomName] = useState(formData.name);
-  const [file, setFile] = useState();
+  const [chatRoomName, setchatRoomName] = useState('');
+  const [chatRoomAvatar, setchatRoomAvatar] = useState('');
+  const [file, setFile] = useState('');
   const [typing, setIsTyping] = useState('');
+  const [modalImage, setModalImage] = useState('');
+  const [isImageOpen, setIsImageModalOpen] = useState(false);
 
-  const { Username, name, avatar, Room } = formData;
+  const { Username, Room } = formData;
 
-  let isTypingTimeout;
-
+  const handleImageModal = (image: SetStateAction<string>) => {
+    setIsImageModalOpen(!isImageOpen);
+    console.log('card1', image);
+    setModalImage(image);
+    console.log('card2', image);
+  };
   const handleExitRoom = () => {
     leaveRoom();
     setIsOptionOpen(false);
@@ -37,10 +42,13 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
     ],
   };
 
-  const debounce = (func, delay) => {
-    let timeoutId;
+  const debounce = (
+    func: (...args: any[]) => void,
+    delay: number | undefined
+  ) => {
+    let timeoutId: number | undefined;
 
-    return (...args) => {
+    return (...args: any[]) => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         func(...args);
@@ -98,13 +106,32 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
     console.log(file);
   };
 
-  const selectFile = (e: any) => {
-    if (e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+  const selectFile = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          if (
+            typeof reader.result === 'string' ||
+            reader.result instanceof ArrayBuffer
+          ) {
+            // Cast to string if it's a string or an ArrayBuffer
+            setFile(reader.result as string);
+          } else {
+            // Handle null case, you can set an empty string or some default value
+            setFile('');
+          }
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+      }
     }
   };
 
-  const handleMessage = (data: any) => {
+  const handleMessage = (data: { type: string; value: any }) => {
     if (data.type === 'alert') {
       setMessageList((prev) => [...prev, { notify: data.value }]);
     } else {
@@ -112,11 +139,12 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
     }
   };
 
-  const handleSetRoomName = ({ roomName }: any) => {
+  const handleSetRoomDetails = ({ roomName, roomImage }: any) => {
     setchatRoomName(roomName);
+    setchatRoomAvatar(roomImage);
   };
 
-  const handleTypingNotification = (data) => {
+  const handleTypingNotification = (data: { author: any }) => {
     console.log('someone is typing');
     setIsTyping(`${data.author} is typing...`);
     setTimeout(() => {
@@ -128,26 +156,26 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
     socket.on('receive_message', handleMessage);
     socket.on('notification', handleMessage);
     socket.on('typing', handleTypingNotification);
-    socket.on('roomDetails', handleSetRoomName);
+    socket.on('roomDetails', handleSetRoomDetails);
     return () => {
       socket.off('receive_message', handleMessage);
       socket.off('notification', handleMessage);
       socket.on('typing', handleTypingNotification);
-      socket.off('roomDetails', handleSetRoomName);
+      socket.off('roomDetails', handleSetRoomDetails);
     };
   }, []);
 
   return (
     <section>
       <div className="w-full h-screen py-8 flex items-center justify-center px-4 md:px-0 ">
-        <div className="w-full md:w-[40vw] h-[80vh] rounded-lg overflow-hidden ">
+        <div className="w-full lg:w-[40vw] h-[80vh] rounded-lg overflow-hidden ">
           <div className="h-[10vh] w-full bg-[#551FFF] flex items-center justify-between px-2">
             <div className=" flex items-center gap-2">
-              {/* <img
-                src=""
-                alt=""
+              <img
+                src={chatRoomAvatar}
+                alt="imagelogo"
                 className="w-8 h-8 border border-red-500 rounded-full"
-              /> */}
+              />
               <p className="text-white font-semibold">{chatRoomName}</p>
             </div>
             <div className="relative">
@@ -165,13 +193,44 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
               </Modal>
             </div>
           </div>
-          <div className="flex-1 h-[60vh] overflow-scroll w-full bg-slate-300 flex flex-col p-5 scrollbar-hide">
+          <div className="relative flex-1 h-[60vh] overflow-scroll w-full bg-slate-300 flex flex-col p-5 scrollbar-hide">
             {messages.map((item, idx) => (
-              <ChatCard item={item} socket={socket} key={idx} />
+              <ChatCard
+                item={item}
+                socket={socket}
+                imageModal={handleImageModal}
+                key={idx}
+              />
             ))}
+            <Modal
+              isDropDown={true}
+              openModal={isImageOpen}
+              onClose={() => setIsImageModalOpen(false)}
+              extrastyle="flex items-center justify-center absolute top-0 left-0 w-full h-full bg-black/50  z-50"
+            >
+              <div
+                className="w-[80vw] h-[30vh]"
+                onClick={() => setIsImageModalOpen(false)}
+              >
+                {modalImage && (
+                  <img src={modalImage} alt="image" className="w-full h-full" />
+                )}
+              </div>
+            </Modal>
           </div>
 
           <div className="relative h-[10vh] bg-[#551FFF] flex items-center gap-2 px-2 py-2">
+            {file && (
+              <div className="absolute left-2 bottom-20 w-56 h-40 p-2 bg-red-200">
+                <button
+                  className="absolute top-2 right-2 w-8 h-8 text-xl"
+                  onClick={() => setFile('')}
+                >
+                  ✖
+                </button>
+                <img src={file} alt="file image" className="w-full h-full" />
+              </div>
+            )}
             {typing !== '' && (
               <p className="absolute left-2 -top-6 italic text-sm">{typing}</p>
             )}

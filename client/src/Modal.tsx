@@ -25,21 +25,17 @@ const Modal = ({
       {openModal && (
         <div
           className={`my-1 bg-white dark:bg-[#0c0c0d] dark:text-white  border ${extrastyle}`}
+          onClick={handleModalClick}
         >
           <div className="relative p-2" ref={modalRef}>
             {!isDropDown && (
               <IoMdClose
                 className="w-8 h-8 absolute right-4 top-4"
-                onClick={handleModalClick}
+                // onClick={handleModalClick}
               />
             )}
 
-            <div
-              //   onClick={handleModalClick}
-              className={`${!isDropDown && 'mt-1'}`}
-            >
-              {children}
-            </div>
+            <div className={`${!isDropDown && 'mt-1'}`}>{children}</div>
           </div>
         </div>
       )}

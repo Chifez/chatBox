@@ -1,5 +1,5 @@
 import Button from './Buton';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import UserInput from './UserInput';
 import { GiCheckMark } from 'react-icons/gi';
 import { MdContentCopy } from 'react-icons/md';
@@ -8,6 +8,7 @@ function Login({
   formData,
   Loading,
   onInputChange,
+  onSelectFile,
   joinRoom,
   createRoom,
   generateUniqueId,
@@ -17,11 +18,12 @@ function Login({
 }: any) {
   const [tab, setTab] = useState('create');
 
-  const { Username, Room, name } = formData;
+  const { Username, Room, name, avatar } = formData;
+
   return (
     <section>
       <div className="w-full h-screen py-8 flex items-center justify-center px-4 md:px-0 ">
-        <div className="w-full md:w-[32vw] min-h-[40vh] flex flex-col bg-white rounded-lg py-2 ">
+        <div className="w-full lg:w-[32vw] min-h-[40vh] flex flex-col  bg-white rounded-lg py-2 overflow-hidden">
           <div className="flex justify-evenly">
             <button
               onClick={() => setTab('create')}
@@ -67,7 +69,7 @@ function Login({
                     <Button
                       handleClick={generateUniqueId}
                       children="Create ID"
-                      className="!w-fit p-3 text-sm whitespace-nowrap"
+                      className="!w-fit p-3 !text-sm whitespace-nowrap"
                     ></Button>
                     <span className="relative  w-full">
                       <UserInput
@@ -92,17 +94,23 @@ function Login({
                   </div>
                   <p className="text-sm text-red-300 text-left">{error}</p>
                 </div>
-                {/* <div className="flex flex-col justify-between gap-4 items-center mb-4">
+                <div className="flex flex-col justify-between gap-4 items-center mb-4">
                   <img
-                    src=""
-                    alt=""
+                    src={avatar}
+                    alt="logo"
                     className="w-16 h-16 border border-[#551FFF] rounded-full"
                   />
+
                   <span className="relative ">
-                    <input type="file" className="absolute opacity-0" />
-                    <Button className=" !text-sm p-3">Upload avatar</Button>
+                    <input
+                      name="avatar"
+                      type="file"
+                      className="absolute opacity-0"
+                      onChange={onSelectFile}
+                    />
+                    <Button className="!text-sm p-3">Select avatar</Button>
                   </span>
-                </div> */}
+                </div>
                 <Button
                   className=" !text-sm p-3"
                   handleClick={createRoom}

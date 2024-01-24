@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const Image = ({ image }) => {
+const Image = ({ image, extrastyle }: { image: any; extrastyle?: any }) => {
   const [imageSrc, setImageSrc] = useState('');
 
   useEffect(() => {
@@ -10,7 +10,13 @@ const Image = ({ image }) => {
       setImageSrc(reader.result);
     };
   }, [image]);
-  return <img src={imageSrc} className="max-w-full h-auto" alt="logo" />;
+  return (
+    <img
+      src={imageSrc}
+      className={`max-w-full h-auto ${extrastyle}`}
+      alt="logo"
+    />
+  );
 };
 
 export default Image;

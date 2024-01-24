@@ -1,5 +1,5 @@
+import { useState } from 'react';
 import Button from './Buton';
-import { useEffect, useState } from 'react';
 import UserInput from './UserInput';
 import { GiCheckMark } from 'react-icons/gi';
 import { MdContentCopy } from 'react-icons/md';

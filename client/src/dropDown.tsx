@@ -1,10 +1,4 @@
-const DropDown = ({
-  list,
-  handleClick,
-}: {
-  list: any;
-  handleClick?: () => void;
-}) => {
+const DropDown = ({ list }: { list: any; handleClick?: () => void }) => {
   const { optionList } = list;
   return (
     <div className="cursor-pointer w-full ">

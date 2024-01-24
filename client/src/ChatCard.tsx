@@ -1,7 +1,7 @@
 import { BiCheckDouble } from 'react-icons/bi';
 
-const ChatCard = ({ item, socket, imageModal }) => {
-  const toggleModal = (image) => {
+const ChatCard = ({ item, socket, imageModal }: any) => {
+  const toggleModal = (image: any) => {
     imageModal(image);
     console.log('chatcard', image);
   };

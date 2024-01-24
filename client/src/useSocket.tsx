@@ -43,7 +43,7 @@ const useSocket = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) => {
 
   // this fix this later bug
   const updateUserName = async () => {
-    const oldName = formData.Username;
+    // const oldName = formData.Username;
     const newUpdate = setFormData({
       ...formData,
       Username: 'newName',
@@ -96,7 +96,7 @@ const useSocket = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) => {
   };
 
   const selectFile = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files.length > 0) {
+    if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
 
       if (file) {

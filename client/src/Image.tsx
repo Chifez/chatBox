@@ -7,7 +7,7 @@ const Image = ({ image, extrastyle }: { image: any; extrastyle?: any }) => {
     const reader = new FileReader();
     reader.readAsDataURL(image);
     reader.onloadend = function () {
-      setImageSrc(reader.result);
+      setImageSrc(reader.result as string);
     };
   }, [image]);
   return (

@@ -3,7 +3,7 @@ import Chats from './Chats';
 import Login from './Login';
 import useSocket from './useSocket';
 
-const socket = io('ws://localhost:5001');
+const socket = io('https://chat-box-server-ochre.vercel.app/');
 
 function App() {
   const {

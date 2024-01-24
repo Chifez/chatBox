@@ -3,7 +3,7 @@ import Chats from './Chats';
 import Login from './Login';
 import useSocket from './useSocket';
 
-const socket = io('https://chat-box-server-ochre.vercel.app/');
+const socket = io('chatbox-production.up.railway.app');
 
 function App() {
   const {

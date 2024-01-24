@@ -158,4 +158,4 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(5001, () => console.log('running'));
+server.listen(process.env.PORT || 5001, () => console.log('running'));

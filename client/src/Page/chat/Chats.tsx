@@ -1,8 +1,8 @@
 import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
-import Button from './Buton';
+import Button from '../../component/Buton';
 import { SlOptionsVertical } from 'react-icons/sl';
-import Modal from './Modal';
-import DropDown from './dropDown';
+import Modal from '../../component/Modal';
+import DropDown from '../../component/dropDown';
 import { IoMdAttach } from 'react-icons/io';
 import ChatCard from './ChatCard';
 

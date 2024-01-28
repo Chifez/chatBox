@@ -8,7 +8,7 @@ const UserInput = (props: {
   placeholder?: string;
   className?: string;
   readonly?: boolean;
-  inputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  inputChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const { label, name, value, placeholder, className, readonly, inputChange } =
     props;

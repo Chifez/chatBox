@@ -6,6 +6,7 @@ import DropDown from './dropDown';
 import { IoMdAttach } from 'react-icons/io';
 import ChatCard from './ChatCard';
 import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
   const [currentMessage, setCurrentMessage] = useState('');

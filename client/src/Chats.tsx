@@ -183,7 +183,7 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
                 <Skeleton circle={true} height={32} width={32} />
               )}
               <p className="text-white font-semibold">
-                {chatRoomName ? chatRoomName : <Skeleton width={60} />}
+                {chatRoomName ? chatRoomName : <Skeleton />}
               </p>
             </div>
             <div className="relative">

@@ -74,6 +74,7 @@ const io = new Server(server, {
     origin: 'https://chat-box-tawny.vercel.app',
     methods: ['GET', 'POST'],
   },
+  maxHttpBufferSize: 4e6, // 4Mb
 });
 
 const rooms = {};

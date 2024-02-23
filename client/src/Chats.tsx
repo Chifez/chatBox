@@ -5,6 +5,7 @@ import Modal from './Modal';
 import DropDown from './dropDown';
 import { IoMdAttach } from 'react-icons/io';
 import ChatCard from './ChatCard';
+import Skeleton from 'react-loading-skeleton';
 
 const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
   const [currentMessage, setCurrentMessage] = useState('');
@@ -171,12 +172,18 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
         <div className="w-full lg:w-[40vw] h-[80vh] rounded-lg overflow-hidden ">
           <div className="h-[10vh] w-full bg-[#551FFF] flex items-center justify-between px-2">
             <div className=" flex items-center gap-2">
-              <img
-                src={chatRoomAvatar}
-                alt="imagelogo"
-                className="w-8 h-8 border border-red-500 rounded-full"
-              />
-              <p className="text-white font-semibold">{chatRoomName}</p>
+              {chatRoomAvatar ? (
+                <img
+                  src={chatRoomAvatar}
+                  alt="imagelogo"
+                  className="w-8 h-8 border border-red-500 rounded-full"
+                />
+              ) : (
+                <Skeleton circle={true} height={32} width={32} />
+              )}
+              <p className="text-white font-semibold">
+                {chatRoomName || <Skeleton />}
+              </p>
             </div>
             <div className="relative">
               <SlOptionsVertical

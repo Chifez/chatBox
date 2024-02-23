@@ -1,9 +1,3 @@
-import { Children, useState } from 'react';
-import Button from './Buton';
-import UserInput from './UserInput';
-import { GiCheckMark } from 'react-icons/gi';
-import { MdContentCopy } from 'react-icons/md';
-
 function Login({ children }: any) {
   return (
     <section>

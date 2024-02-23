@@ -71,7 +71,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: 'https://chat-box-tawny.vercel.app',
+    origin: ' http://localhost:5175/',
     methods: ['GET', 'POST'],
   },
 });

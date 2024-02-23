@@ -49,7 +49,7 @@ const Navigation = () => {
         </div>
 
         <Button
-          className="w-fit text-base font-medium px-4"
+          className="w-fit !text-base px-4 bg-transparent border-2 hover:bg-gray-200  text-black"
           handleClick={handleGetStarted}
         >
           Get Started

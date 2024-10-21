@@ -59,6 +59,8 @@
 // });
 // server.listen(5001, () => console.log('running'));
 
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { Server } = require('socket.io');
@@ -66,18 +68,21 @@ const http = require('http');
 const fs = require('fs');
 const app = express();
 
+const corsOrigin =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5176'
+    : process.env.ORIGIN;
+
 app.use(cors());
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin:
-      process.env.NODE.ENV == 'development'
-        ? 'http://localhost:5176'
-        : process.env.ORIGIN,
+    origin: corsOrigin,
+
     methods: ['GET', 'POST'],
   },
-  maxHttpBufferSize: 4e6, // 4Mb
+  maxHttpBufferSize: 4e6, // me
 });
 
 const rooms = {};
@@ -162,4 +167,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(process.env.PORT || 5001, () => console.log('running'));
+server.listen(process.env.PORT || 5001, () =>
+  console.log('running', process.env)
+);

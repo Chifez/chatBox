@@ -3,7 +3,12 @@ import Chats from './Chats';
 import Login from './Login';
 import useSocket from './useSocket';
 
-const socket = io('https://chatbox-production.up.railway.app/');
+const apiUrl =
+  process.env.NODE_ENV !== 'development'
+    ? process.env.REACT_APP_BASE_URL
+    : 'localhost:5001';
+
+const socket = io(apiUrl || 'localhost:5001');
 
 function App() {
   const {

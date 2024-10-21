@@ -13,7 +13,7 @@ const Image = ({ image, extrastyle }: { image: any; extrastyle?: any }) => {
   return (
     <img
       src={imageSrc}
-      className={`max-w-full h-auto ${extrastyle}`}
+      className={`max-w-full h-auto object-cover ${extrastyle}`}
       alt="logo"
     />
   );

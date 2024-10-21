@@ -24,7 +24,7 @@ const Modal = ({
     <>
       {openModal && (
         <div
-          className={`my-1 bg-white dark:bg-[#0c0c0d] dark:text-white  border ${extrastyle}`}
+          className={`my-1 bg-white dark:bg-[#0c0c0d]  border ${extrastyle}`}
           onClick={handleModalClick}
         >
           <div className="relative p-2" ref={modalRef}>

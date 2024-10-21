@@ -71,7 +71,10 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: 'https://chat-box-tawny.vercel.app',
+    origin:
+      process.env.NODE.ENV == 'development'
+        ? 'http://localhost:5176'
+        : process.env.ORIGIN,
     methods: ['GET', 'POST'],
   },
   maxHttpBufferSize: 4e6, // 4Mb

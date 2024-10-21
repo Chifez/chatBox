@@ -175,7 +175,7 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
             <div className=" flex items-center gap-2">
               {chatRoomAvatar ? (
                 <img
-                  src={chatRoomAvatar}
+                  src={chatRoomAvatar || '/banner.png'}
                   alt="imagelogo"
                   className="w-8 h-8 border border-red-500 rounded-full"
                 />
@@ -195,7 +195,7 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
                 isDropDown={true}
                 openModal={isOptionOpen}
                 onClose={() => setIsOptionOpen(false)}
-                extrastyle="absolute right-1 rounded-md z-50"
+                extrastyle="absolute right-1 rounded-md z-50 "
               >
                 <DropDown list={optionlist} />
               </Modal>
@@ -214,14 +214,18 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
               isDropDown={true}
               openModal={isImageOpen}
               onClose={() => setIsImageModalOpen(false)}
-              extrastyle="flex items-center justify-center absolute top-0 left-0 w-full h-full bg-black/50  z-50"
+              extrastyle="flex items-center justify-center sticky top-0 bottom-0 left-0 w-full h-full !bg-black/50 z-50"
             >
               <div
-                className="w-[80vw] h-[30vh]"
+                className="w-[80vw] h-[80vh]"
                 onClick={() => setIsImageModalOpen(false)}
               >
                 {modalImage && (
-                  <img src={modalImage} alt="image" className="w-full h-full" />
+                  <img
+                    src={modalImage}
+                    alt="image"
+                    className="w-full h-full object-contain"
+                  />
                 )}
               </div>
             </Modal>
@@ -237,6 +241,7 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
                   ✖
                 </button>
                 <img src={file} alt="file image" className="w-full h-full" />
+                <p className="text-xs">image size can't be more than 1mb</p>
               </div>
             )}
             {typing !== '' && (

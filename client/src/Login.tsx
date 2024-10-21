@@ -96,7 +96,7 @@ function Login({
                 </div>
                 <div className="flex flex-col justify-between gap-4 items-center mb-4">
                   <img
-                    src={avatar}
+                    src={avatar || '/banner.png'}
                     alt="logo"
                     className="w-16 h-16 border border-[#551FFF] rounded-full"
                   />

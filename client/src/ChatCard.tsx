@@ -1,4 +1,5 @@
 import { BiCheckDouble } from 'react-icons/bi';
+import { linkify } from './Link';
 
 const ChatCard = ({ item, socket, imageModal }: any) => {
   const toggleModal = (image: any) => {
@@ -31,7 +32,7 @@ const ChatCard = ({ item, socket, imageModal }: any) => {
           </p>
 
           {item.data?.message && (
-            <p className="w-full pb-1  ">{item.data?.message}</p>
+            <p className="w-full pb-1  ">{linkify(item.data?.message)}</p>
           )}
           {item.data?.image && (
             <div onClick={() => toggleModal(item.data?.image)}>

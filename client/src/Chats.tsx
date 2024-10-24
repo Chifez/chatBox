@@ -48,16 +48,17 @@ const Chats = ({ socket, formData, leaveRoom, updateUserName }: any) => {
     func: (...args: any[]) => void,
     delay: number | undefined
   ) => {
-    let timeoutId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     return (...args: any[]) => {
-      clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
       timeoutId = setTimeout(() => {
         func(...args);
       }, delay);
     };
   };
-
   const getCurrentTime = () => {
     const options: Intl.DateTimeFormatOptions = {
       hour: 'numeric',

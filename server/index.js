@@ -70,7 +70,7 @@ const app = express();
 
 const corsOrigin =
   process.env.NODE_ENV === 'development'
-    ? 'http://localhost:5176'
+    ? 'http://localhost:5174'
     : process.env.ORIGIN;
 
 app.use(cors());

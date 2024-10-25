@@ -10,7 +10,8 @@ import useSocket from './useSocket';
 
 const apiUrl = process.env.REACT_APP_SERVER_URL;
 
-const socket = io(apiUrl || 'localhost:5001');
+// const socket = io(apiUrl || 'localhost:5001');
+const socket = io(apiUrl || 'https://chatbox-x8t3.onrender.com/');
 
 function App() {
   const {

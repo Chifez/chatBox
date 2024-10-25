@@ -3,10 +3,12 @@ import Chats from './Chats';
 import Login from './Login';
 import useSocket from './useSocket';
 
-const apiUrl =
-  process.env.NODE_ENV !== 'development'
-    ? process.env.REACT_APP_SERVER_URL
-    : 'localhost:5001';
+// const apiUrl =
+//   process.env.NODE_ENV !== 'development'
+//     ? process.env.REACT_APP_SERVER_URL
+//     : 'localhost:5001';
+
+const apiUrl = process.env.REACT_APP_SERVER_URL;
 
 const socket = io(apiUrl || 'localhost:5001');
 

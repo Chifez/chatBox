@@ -68,17 +68,19 @@ const http = require('http');
 const fs = require('fs');
 const app = express();
 
-const corsOrigin =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:5174'
-    : process.env.ORIGIN;
+// const corsOrigin =
+//   process.env.NODE_ENV === 'development'
+//     ? 'http://localhost:5174'
+//     : process.env.ORIGIN;
+
+const corsOrigin = process.env.ORIGIN;
 
 app.use(cors());
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: corsOrigin,
+    origin: corsOrigin || 'http://localhost:5174',
 
     methods: ['GET', 'POST'],
   },
